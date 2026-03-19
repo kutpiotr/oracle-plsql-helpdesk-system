@@ -105,3 +105,16 @@ Dane obejmują:
 - przykładowe zgłoszenia,
 - komentarze,
 - historię zmian statusów.
+
+## Logika biznesowa w PL/SQL
+
+Główna logika biznesowa systemu została zaimplementowana w pakiecie `ticket_management_pkg`.
+
+Pakiet zawiera procedury odpowiedzialne za:
+- tworzenie zgłoszeń,
+- przypisywanie zgłoszeń do agentów,
+- zmianę statusów,
+- zamykanie zgłoszeń,
+- dodawanie komentarzy.
+
+Zawiera również funkcję zwracającą liczbę otwartych zgłoszeń.
