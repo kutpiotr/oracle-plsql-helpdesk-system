@@ -1,130 +1,226 @@
 # Oracle PL/SQL Helpdesk System
 
+## Opis projektu
+
+Projekt przedstawia system obsługi zgłoszeń helpdesk oparty o bazę danych Oracle oraz logikę biznesową zaimplementowaną w PL/SQL.
+System został zaprojektowany w podejściu **database-centric**, gdzie kluczowa logika aplikacyjna realizowana jest po stronie bazy danych.
+
+---
+
 ## Cel projektu
 
-Projekt przedstawia system obsługi zgłoszeń helpdesk oparty o bazę danych Oracle oraz logikę biznesową zaimplementowaną w PL/SQL.  
-System umożliwia tworzenie zgłoszeń, przypisywanie ich do agentów, zmianę statusów, dodawanie komentarzy oraz rejestrowanie historii zmian.
+Celem projektu było:
+
+* zaprojektowanie relacyjnego modelu danych,
+* implementacja logiki biznesowej w PL/SQL,
+* zapewnienie spójności danych poprzez walidacje i ograniczenia,
+* przygotowanie podstawowych mechanizmów raportowania.
+
+---
 
 ## Zakres projektu
 
 System umożliwia:
-- zarządzanie użytkownikami i rolami,
-- tworzenie zgłoszeń helpdesk,
-- przypisywanie zgłoszeń do agentów,
-- zmianę statusów zgłoszeń,
-- zamykanie zgłoszeń,
-- dodawanie komentarzy,
-- zapisywanie historii zmian statusów,
-- generowanie podstawowych widoków raportowych.
+
+* zarządzanie użytkownikami i rolami,
+* tworzenie zgłoszeń helpdesk,
+* przypisywanie zgłoszeń do agentów,
+* zmianę statusów zgłoszeń zgodnie z workflow,
+* zamykanie zgłoszeń,
+* dodawanie komentarzy,
+* zapisywanie historii zmian statusów,
+* generowanie widoków raportowych.
+
+---
+
+## Technologie
+
+Projekt został zrealizowany z wykorzystaniem:
+
+* Oracle Database XE
+* Oracle PL/SQL
+* SQL
+* Oracle SQL Developer
+* Git
+* GitHub
+* Markdown
+
+---
 
 ## Role użytkowników
 
 W systemie występują następujące role:
-- `USER` – użytkownik zgłaszający problem,
-- `AGENT` – osoba obsługująca zgłoszenia,
-- `ADMIN` – administrator systemu.
+
+* `USER` – użytkownik zgłaszający problem,
+* `AGENT` – osoba obsługująca zgłoszenia,
+* `ADMIN` – administrator systemu.
+
+---
 
 ## Statusy zgłoszeń
 
-System obsługuje następujące statusy zgłoszeń:
-- `NEW`
-- `IN_PROGRESS`
-- `RESOLVED`
-- `CLOSED`
+System obsługuje następujące statusy:
+
+* `NEW`
+* `IN_PROGRESS`
+* `RESOLVED`
+* `CLOSED`
+
+---
 
 ## Priorytety zgłoszeń
 
 System obsługuje następujące priorytety:
-- `LOW`
-- `MEDIUM`
-- `HIGH`
+
+* `LOW`
+* `MEDIUM`
+* `HIGH`
+
+---
 
 ## Reguły biznesowe
 
 1. Każdy użytkownik może utworzyć zgłoszenie.
 2. Nowe zgłoszenie otrzymuje status `NEW`.
 3. Zgłoszenie może zostać przypisane tylko do użytkownika z rolą `AGENT`.
-4. Tylko przypisany agent albo administrator może zmienić status zgłoszenia.
-5. Status zgłoszenia może zmieniać się zgodnie z ustalonym przebiegiem procesu.
-6. Zgłoszenie może zostać zamknięte tylko wtedy, gdy wcześniej uzyskało status `RESOLVED`.
-7. Każda zmiana statusu zgłoszenia musi zostać zapisana w historii.
+4. Tylko przypisany agent lub administrator może zmienić status zgłoszenia.
+5. Status zgłoszenia zmienia się zgodnie z ustalonym workflow.
+6. Zgłoszenie może zostać zamknięte tylko po osiągnięciu statusu `RESOLVED`.
+7. Każda zmiana statusu jest zapisywana w historii.
 8. Do zgłoszenia można dodawać komentarze.
-9. Nie można utworzyć zgłoszenia bez tytułu i opisu.
-10. Każdy użytkownik musi mieć przypisaną dokładnie jedną rolę.
+9. Zgłoszenie musi posiadać tytuł i opis.
+10. Każdy użytkownik posiada dokładnie jedną rolę.
+
+---
 
 ## Przepływ statusów
 
-Dozwolone przejścia statusów:
-- `NEW` → `IN_PROGRESS`
-- `IN_PROGRESS` → `RESOLVED`
-- `RESOLVED` → `CLOSED`
-- `RESOLVED` → `IN_PROGRESS`
+Dozwolone przejścia:
+
+* `NEW` → `IN_PROGRESS`
+* `IN_PROGRESS` → `RESOLVED`
+* `RESOLVED` → `CLOSED`
+* `RESOLVED` → `IN_PROGRESS`
+
+---
 
 ## Model danych
 
-Projekt wykorzystuje relacyjny model danych oparty o następujące tabele:
+Projekt wykorzystuje relacyjny model danych oparty o tabele:
 
-- `roles` – role użytkowników systemu,
-- `users` – użytkownicy systemu,
-- `tickets` – zgłoszenia helpdesk,
-- `ticket_comments` – komentarze do zgłoszeń,
-- `ticket_status_history` – historia zmian statusów zgłoszeń.
+* `roles`
+* `users`
+* `tickets`
+* `ticket_comments`
+* `ticket_status_history`
 
 ### Relacje
 
-- każdy użytkownik posiada jedną rolę,
-- każde zgłoszenie jest tworzone przez użytkownika,
-- zgłoszenie może być przypisane do agenta,
-- każde zgłoszenie może posiadać wiele komentarzy,
-- każda zmiana statusu zgłoszenia jest zapisywana w historii.
+* użytkownik posiada jedną rolę,
+* zgłoszenie jest tworzone przez użytkownika,
+* zgłoszenie może być przypisane do agenta,
+* zgłoszenie może mieć wiele komentarzy,
+* każda zmiana statusu jest zapisywana w historii.
 
-### Główne atrybuty
+### Kluczowe informacje
 
-Tabela `tickets` przechowuje m.in.:
-- tytuł zgłoszenia,
-- opis zgłoszenia,
-- autora zgłoszenia,
-- przypisanego agenta,
-- status,
-- priorytet,
-- daty utworzenia, aktualizacji i zamknięcia.
+Tabela `tickets` zawiera m.in.:
+
+* tytuł i opis zgłoszenia,
+* autora zgłoszenia,
+* przypisanego agenta,
+* status i priorytet,
+* daty utworzenia, aktualizacji i zamknięcia.
 
 Tabela `ticket_status_history` przechowuje:
-- poprzedni status,
-- nowy status,
-- użytkownika wykonującego zmianę,
-- datę zmiany.
+
+* poprzedni i nowy status,
+* użytkownika wykonującego zmianę,
+* datę zmiany.
+
+---
 
 ## Dane testowe
 
-Projekt zawiera przykładowe dane w pliku `seed.sql`, które umożliwiają szybkie przetestowanie funkcjonalności systemu.
+Projekt zawiera przykładowe dane (`seed.sql`), które umożliwiają szybkie przetestowanie systemu.
 
 Dane obejmują:
-- role użytkowników,
-- użytkowników systemu,
-- przykładowe zgłoszenia,
-- komentarze,
-- historię zmian statusów.
+
+* role użytkowników,
+* użytkowników,
+* zgłoszenia,
+* komentarze,
+* historię zmian.
+
+---
 
 ## Logika biznesowa w PL/SQL
 
-Główna logika biznesowa systemu została zaimplementowana w pakiecie `ticket_management_pkg`.
+Główna logika systemu została zaimplementowana w pakiecie:
 
-Pakiet zawiera procedury odpowiedzialne za:
-- tworzenie zgłoszeń,
-- przypisywanie zgłoszeń do agentów,
-- zmianę statusów,
-- zamykanie zgłoszeń,
-- dodawanie komentarzy.
+`ticket_management_pkg`
 
-Zawiera również funkcję zwracającą liczbę otwartych zgłoszeń.
+Pakiet zawiera:
 
-### assign_ticket
+* `create_ticket` – tworzenie zgłoszeń
+* `assign_ticket` – przypisywanie zgłoszeń do agentów
+* `change_status` – zmiana statusów zgodnie z workflow
+* `close_ticket` – zamykanie zgłoszeń
+* `add_comment` – dodawanie komentarzy
+* `get_open_tickets_count` – liczba otwartych zgłoszeń
 
-Procedura przypisuje zgłoszenie do użytkownika z rolą `AGENT`.  
-Przed wykonaniem operacji sprawdzana jest:
-- poprawność identyfikatora zgłoszenia,
-- istnienie użytkownika,
-- rola użytkownika.
+Walidacje biznesowe realizowane są przy użyciu `RAISE_APPLICATION_ERROR`.
 
-W przypadku naruszenia reguł biznesowych zgłaszany jest błąd aplikacyjny.
+---
+
+## Widoki raportowe
+
+Projekt zawiera widoki wspierające analizę danych:
+
+* `vw_open_tickets` – lista otwartych zgłoszeń
+* `vw_tickets_by_status` – liczba zgłoszeń według statusu
+* `vw_tickets_by_agent` – liczba zgłoszeń przypisanych do agentów
+* `vw_ticket_comments_count` – liczba komentarzy dla zgłoszeń
+
+
+
+---
+
+## Jak uruchomić projekt
+
+1. Uruchom `schema.sql`
+2. Uruchom `seed.sql`
+3. Uruchom `package_spec.sql`
+4. Uruchom `package_body.sql`
+5. Uruchom `views.sql`
+6. (opcjonalnie) uruchom `test_queries.sql`
+
+---
+
+## Testy
+
+Projekt zawiera:
+
+* `sql/test_queries.sql` – zapytania testowe
+* `tests/manual_tests.md` – scenariusze testowe
+
+Testy obejmują:
+
+* tworzenie zgłoszeń,
+* walidację błędnych danych,
+* przypisywanie zgłoszeń,
+* zmianę statusów,
+* zamykanie zgłoszeń,
+* dodawanie komentarzy.
+
+---
+
+## Możliwości rozwoju
+
+Projekt może zostać rozszerzony o:
+
+* bardziej zaawansowane zarządzanie uprawnieniami,
+* dodatkowe raporty i analizy,
+* automatyczne testy PL/SQL,
+* integrację z backendem (API),
+* interfejs użytkownika.
