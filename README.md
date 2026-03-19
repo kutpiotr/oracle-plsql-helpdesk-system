@@ -118,3 +118,13 @@ Pakiet zawiera procedury odpowiedzialne za:
 - dodawanie komentarzy.
 
 Zawiera również funkcję zwracającą liczbę otwartych zgłoszeń.
+
+### assign_ticket
+
+Procedura przypisuje zgłoszenie do użytkownika z rolą `AGENT`.  
+Przed wykonaniem operacji sprawdzana jest:
+- poprawność identyfikatora zgłoszenia,
+- istnienie użytkownika,
+- rola użytkownika.
+
+W przypadku naruszenia reguł biznesowych zgłaszany jest błąd aplikacyjny.
