@@ -72,8 +72,9 @@ p_changed_by IN NUMBER
 v_current_status VARCHAR2(20);
 v_ticket_count NUMBER;
 v_user_count NUMBER;
+v_assigned_to NUMBER;
+v_is_admin NUMBER;
 BEGIN
--- sprawdzenie ticketu
 SELECT COUNT(*)
 INTO v_ticket_count
 FROM tickets
@@ -83,7 +84,6 @@ IF v_ticket_count = 0 THEN
 RAISE_APPLICATION_ERROR(-20007, 'Ticket does not exist.');
 END IF;
 
--- sprawdzenie użytkownika
 SELECT COUNT(*)
 INTO v_user_count
 FROM users
@@ -93,18 +93,26 @@ IF v_user_count = 0 THEN
 RAISE_APPLICATION_ERROR(-20008, 'User does not exist.');
 END IF;
 
--- pobranie aktualnego statusu
-SELECT status
-INTO v_current_status
+SELECT status, assigned_to
+INTO v_current_status, v_assigned_to
 FROM tickets
 WHERE ticket_id = p_ticket_id;
 
--- walidacja statusu docelowego
+SELECT COUNT(*)
+INTO v_is_admin
+FROM users u
+JOIN roles r ON u.role_id = r.role_id
+WHERE u.user_id = p_changed_by
+AND r.role_name = 'ADMIN';
+
+IF p_changed_by != v_assigned_to AND v_is_admin = 0 THEN
+RAISE_APPLICATION_ERROR(-20020, 'Only assigned agent or admin can change ticket status.');
+END IF;
+
 IF p_new_status NOT IN ('NEW', 'IN_PROGRESS', 'RESOLVED', 'CLOSED') THEN
 RAISE_APPLICATION_ERROR(-20009, 'Invalid status.');
 END IF;
 
--- walidacja przejść statusów
 IF v_current_status = 'NEW' AND p_new_status != 'IN_PROGRESS' THEN
 RAISE_APPLICATION_ERROR(-20010, 'Invalid status transition.');
 END IF;
@@ -121,7 +129,6 @@ IF v_current_status = 'CLOSED' THEN
 RAISE_APPLICATION_ERROR(-20013, 'Cannot change status of closed ticket.');
 END IF;
 
--- zapis historii
 INSERT INTO ticket_status_history (
 ticket_id,
 old_status,
@@ -137,7 +144,6 @@ p_changed_by,
 SYSDATE
 );
 
--- aktualizacja ticketu
 UPDATE tickets
 SET status = p_new_status,
 updated_at = SYSDATE,
