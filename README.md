@@ -114,6 +114,8 @@ Projekt wykorzystuje relacyjny model danych oparty o tabele:
 * `ticket_comments`
 * `ticket_status_history`
 
+![Data Model](docs/ERD.png)
+
 ### Relacje
 
 * użytkownik posiada jedną rolę,
@@ -183,9 +185,17 @@ Projekt zawiera widoki wspierające analizę danych:
 * `vw_ticket_comments_count` – liczba komentarzy dla zgłoszeń
 
 
-
 ---
 
+## Przykładowe wyniki
+
+### Otwarte zgłoszenia
+![Open Tickets](docs/vw_open_tickets.png)
+
+### Liczba zgłoszeń według statusu
+![Tickets by Status](docs/vw_tickets_by_status.png)
+
+---
 ## Jak uruchomić projekt
 
 1. Uruchom `schema.sql`
