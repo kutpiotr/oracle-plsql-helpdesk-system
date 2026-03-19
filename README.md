@@ -94,3 +94,14 @@ Tabela `ticket_status_history` przechowuje:
 - nowy status,
 - użytkownika wykonującego zmianę,
 - datę zmiany.
+
+## Dane testowe
+
+Projekt zawiera przykładowe dane w pliku `seed.sql`, które umożliwiają szybkie przetestowanie funkcjonalności systemu.
+
+Dane obejmują:
+- role użytkowników,
+- użytkowników systemu,
+- przykładowe zgłoszenia,
+- komentarze,
+- historię zmian statusów.
