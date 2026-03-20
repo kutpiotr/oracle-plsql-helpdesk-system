@@ -306,3 +306,7 @@ Projekt może zostać rozszerzony o:
 * automatyczne testy PL/SQL,
 * integrację z backendem (API),
 * interfejs użytkownika.
+
+## Autor
+
+Piotr Kut student kierunku Inżynieria i analiza danych
