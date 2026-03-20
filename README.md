@@ -42,8 +42,6 @@ Projekt został zrealizowany z wykorzystaniem:
 * SQL
 * Oracle SQL Developer
 * Git
-* GitHub
-* Markdown
 
 ---
 
@@ -175,6 +173,80 @@ Walidacje biznesowe realizowane są przy użyciu `RAISE_APPLICATION_ERROR`.
 
 ---
 
+## Przykładowe wywołania procedur
+
+### Tworzenie zgłoszenia
+
+```sql
+BEGIN
+ticket_management_pkg.create_ticket(
+p_title => 'Problem z logowaniem',
+p_description => 'Nie mogę się zalogować do systemu',
+p_created_by => 1,
+p_priority => 'HIGH'
+);
+END;
+/
+```
+
+### Przypisanie zgłoszenia
+
+```sql
+BEGIN
+ticket_management_pkg.assign_ticket(
+p_ticket_id => 1,
+p_agent_id => 4
+);
+END;
+/
+```
+
+### Zmiana statusu
+
+```sql
+BEGIN
+ticket_management_pkg.change_status(
+p_ticket_id => 1,
+p_new_status => 'IN_PROGRESS',
+p_changed_by => 4
+);
+END;
+/
+```
+
+### Zamknięcie zgłoszenia
+
+```sql
+BEGIN
+ticket_management_pkg.close_ticket(
+p_ticket_id => 3,
+p_closed_by => 3
+);
+END;
+/
+```
+
+### Dodanie komentarza
+
+```sql
+BEGIN
+ticket_management_pkg.add_comment(
+p_ticket_id => 1,
+p_author_id => 4,
+p_comment_text => 'Rozpoczęto analizę problemu'
+);
+END;
+/
+```
+
+### Liczba otwartych zgłoszeń
+
+```sql
+SELECT ticket_management_pkg.get_open_tickets_count
+FROM dual;
+```
+
+---
 ## Widoki raportowe
 
 Projekt zawiera widoki wspierające analizę danych:
